@@ -16,7 +16,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
         public override async void EnterState()
         {
             // TODO refactor
-            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, "Price Quotation message", replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Ok });
+            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.PriceQuotaionRequest, replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Ok });
         }
 
         public override async Task Execute(Message message)
@@ -28,8 +28,8 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
             {
                 if (query.Data == _response.Cancel)
                 {
-                    await _stateMachine.Bot.AnswerCallbackQuery(query.Id, $"You denied payment");
-                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, "Very inisisting Price Quotation message", replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Ok });
+                    await _stateMachine.Bot.AnswerCallbackQuery(query.Id, "You denied payment");
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.StrongPriceQuotaionRequest, replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Ok });
                 }
                 else if (query.Data == _response.Ok)
                 {

@@ -11,6 +11,8 @@ namespace TelegramBotDiseusTestApp
         public string GreetingsResponse { get; set; }
         public string PassportRequest { get; set; }
         public string DriverLicenceRequest { get; set; }
+        public string PriceQuotaionRequest { get; set; }
+        public string StrongPriceQuotaionRequest { get; set; }
 
         public string DidntSendPassportResponse { get; set; }
         public string DidntSendDriverLicenseResponse { get; set; }
@@ -23,6 +25,8 @@ namespace TelegramBotDiseusTestApp
             GreetingsResponse = "I'm your Car Insurance Assistant Bot. I'm here to help you purchase car insurance quickly and easily.\r\nLet's get started with the process!",
             PassportRequest = "To proceed, please send a clear photo of your passport",
             DriverLicenceRequest = "Now, please send a clear photo of your vehicle identification document",
+            PriceQuotaionRequest = "The fixed price for your car insurance is $100.\r\nDo you agree with this price?",
+            StrongPriceQuotaionRequest = "Sorry, but the fixed price for your car insurance is $100.\r\nDo you agree with this price?",
 
             DidntSendPassportResponse = "Please send a clear photo of your passport",
             DidntSendDriverLicenseResponse = "Please send a clear photo of your vehicle identification document",
