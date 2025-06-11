@@ -1,7 +1,8 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TelegramBotDiseusTestApp
+namespace TelegramBotDiseusTestApp.Services
 {
     internal class TelegramDataTransferService
     {
@@ -26,6 +27,16 @@ namespace TelegramBotDiseusTestApp
             await using var stream = File.Create(filePath);
             await _bot.DownloadFile(tgFile, stream);
             return filePath;
+        }
+
+        public bool DeletePhoto(string photoPath)
+        {
+            if (File.Exists(photoPath))
+            {
+                File.Delete(photoPath);
+                return true;
+            }
+            return false;
         }
 
         private void CreateDownloadDirectory()

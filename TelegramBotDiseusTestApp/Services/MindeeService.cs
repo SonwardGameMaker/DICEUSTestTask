@@ -3,7 +3,7 @@ using Mindee.Input;
 using Mindee.Product.DriverLicense;
 using Mindee.Product.Passport;
 
-namespace TelegramBotDiseusTestApp
+namespace TelegramBotDiseusTestApp.Services
 {
     internal class MindeeService
     {

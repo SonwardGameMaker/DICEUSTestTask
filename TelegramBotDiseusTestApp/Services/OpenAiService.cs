@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenAI;
 using OpenAI.Chat;
 
-namespace TelegramBotDiseusTestApp
+namespace TelegramBotDiseusTestApp.Services
 {
     internal class OpenAiService
     {
