@@ -1,4 +1,5 @@
 ﻿using Mindee.Product.DriverLicense;
+using Mindee.Product.InternationalId;
 using Mindee.Product.Passport;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -16,9 +17,9 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         private readonly List<ChatState> _states;
         private ChatState _currentState;
 
-        public event Action? JobDone;
+        public event Action<long>? JobDone;
 
-        public ChatStateMachine(Chat chat, TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, OpenAiService openAiService)
+        public ChatStateMachine(Chat chat, TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
             _chat = chat;
             _bot = bot;
@@ -26,10 +27,10 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
 
             PassportPhotoPath = "";
             DriverLicensePhotoPath = "";
-            Passport = new PassportV1();
+            Passport = new InternationalIdV2();
             DriverLicense = new DriverLicenseV1();
 
-            _states = InitStates(mindeeService, openAiService);
+            _states = InitStates(mindeeService, groqService);
             GetState<InsurancePolicyIssuanceState>().JobDone += ClearPhotoData;
 
             _currentState = _states[0];
@@ -42,7 +43,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
 
         public string PassportPhotoPath {  get; set; }
         public string DriverLicensePhotoPath { get; set; }
-        public  PassportV1 Passport { get; set; }
+        public  InternationalIdV2 Passport { get; set; }
         public DriverLicenseV1 DriverLicense { get; set; }
 
         public void ChangeSate<T>() where T : ChatState
@@ -60,14 +61,15 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         public async Task Execute(Update update)
             => await _currentState.Execute(update);
 
-        private List<ChatState> InitStates(MindeeService mindeeService, OpenAiService openAiService)
+        private List<ChatState> InitStates(MindeeService mindeeService, GroqService groqService)
         {
             List<ChatState> chatStates = new List<ChatState>();
 
+            chatStates.Add(new GreetingsState(this));
             chatStates.Add(new PassportRequirementState(this));
             chatStates.Add(new DriverLicenseRequirementState(this, mindeeService));
             chatStates.Add(new PriceQuotationState(this));
-            chatStates.Add(new InsurancePolicyIssuanceState(this, openAiService));
+            chatStates.Add(new InsurancePolicyIssuanceState(this, groqService));
 
             return chatStates;
         }
@@ -77,7 +79,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             GetState<DriverLicenseRequirementState>().ClearData();
             GetState<InsurancePolicyIssuanceState>().JobDone -= ClearPhotoData;
 
-            JobDone?.Invoke();
+            JobDone?.Invoke(_chat.Id);
         }
     }
 }

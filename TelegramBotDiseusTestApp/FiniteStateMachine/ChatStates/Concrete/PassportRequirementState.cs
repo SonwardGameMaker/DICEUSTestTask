@@ -11,18 +11,22 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
 
         public override async void EnterState()
         {
-            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, BotResponseData.TempResponceData.GreetingsResponse);
-            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, BotResponseData.TempResponceData.PassportRequest);
+            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.PassportRequest);
         }
 
         public override async Task Execute(Message message)
         {
-            _stateMachine.PassportPhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.Passport);
-            _stateMachine.ChangeSate<DriverLicenseRequirementState>();
+            if (message.Photo != null)
+            {
+                _stateMachine.PassportPhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.Passport);
+                _stateMachine.ChangeSate<DriverLicenseRequirementState>();
+            }
+            else
+                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendPassportResponse);
         }
 
         public override async Task Execute(Update update)
-            => await _stateMachine.Bot.SendMessage(_stateMachine.Chat, BotResponseData.TempResponceData.DidntSendPassportResponse);
+            => await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendPassportResponse);
 
         public override void ExitState() { }
     }

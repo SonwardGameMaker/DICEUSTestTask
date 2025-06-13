@@ -24,6 +24,21 @@ namespace TelegramBotDiseusTestApp.Services
             Console.WriteLine("Done texting to chat");
             return result.Value.Content[0].Text;
         }
+        public async Task<string> TextToChat2(string text)
+        {
+            try
+            {
+                Console.WriteLine("Texting to chat");
+                var result = await _client.CompleteChatAsync(text);
+                Console.WriteLine("Done texting to chat");
+                return result.Value.Content[0].Text;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return "ERROR: " + ex.Message;
+            }
+        }
 
         public string TextToChatTest(string text)
         {

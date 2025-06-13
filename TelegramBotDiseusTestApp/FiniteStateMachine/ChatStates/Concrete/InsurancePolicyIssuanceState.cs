@@ -6,18 +6,18 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
 {
     internal class InsurancePolicyIssuanceState : ChatState
     {
-        private OpenAiService _openAiService;
+        private GroqService _groqService;
 
         public event Action? JobDone;
 
-        public InsurancePolicyIssuanceState(ChatStateMachine chatStateMachine, OpenAiService openAiService) : base(chatStateMachine)
+        public InsurancePolicyIssuanceState(ChatStateMachine chatStateMachine, GroqService groqService) : base(chatStateMachine)
         {
-            _openAiService = openAiService;
+            _groqService = groqService;
         }
 
         public override async void EnterState()
         {
-            string chatGptResponce = await _openAiService.TextToChat($"Generate a dummy insurance policy based on data:\n" +
+            string chatGptResponce = await _groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
                 $"{_stateMachine.Passport.Prediction.ToString()}\n" +
                 $"{_stateMachine.DriverLicense.Prediction.ToString()}");
             await _stateMachine.Bot.SendMessage(_stateMachine.Chat, chatGptResponce);

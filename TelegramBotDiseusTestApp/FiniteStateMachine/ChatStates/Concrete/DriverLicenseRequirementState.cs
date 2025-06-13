@@ -1,4 +1,5 @@
 ﻿using Mindee.Product.DriverLicense;
+using Mindee.Product.InternationalId;
 using Mindee.Product.Passport;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -11,13 +12,11 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
     {
         private bool _photoWasScaned;
         private MindeeService _mindeeService;
-        BotResponseData _response;
-
+        
         public DriverLicenseRequirementState(ChatStateMachine chatStateMachine, MindeeService mindeeService) : base(chatStateMachine)
         {
             _photoWasScaned = false;
             _mindeeService = mindeeService;
-            _response = BotResponseData.TempResponceData;
         }
 
         public override async void EnterState()
@@ -25,17 +24,26 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
 
         public override async Task Execute(Message message)
         {
-            if (!_photoWasScaned)
+            if (message.Photo != null)
             {
-                _stateMachine.DriverLicensePhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.DriverLicense);
+                if (!_photoWasScaned)
+                {
+                    _stateMachine.DriverLicensePhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.DriverLicense);
 
-                _stateMachine.Passport = await _mindeeService.GetPassportData(_stateMachine.PassportPhotoPath);
-                _stateMachine.DriverLicense = await _mindeeService.GetDriverLicenseData(_stateMachine.DriverLicensePhotoPath);
-                _photoWasScaned = true;
+                    _stateMachine.Passport = await _mindeeService.GetIdData(_stateMachine.PassportPhotoPath);
+                    _stateMachine.DriverLicense = await _mindeeService.GetDriverLicenseData(_stateMachine.DriverLicensePhotoPath);
+                    _photoWasScaned = true;
 
-                // TODO refactor
-                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, "Confirm your data:", replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Confirm });
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _stateMachine.Passport.Prediction.ToString());
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _stateMachine.DriverLicense.Prediction.ToString());
+
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DataConfirmation, replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Confirm });
+                }
+                else
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
             }
+            else
+                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
         }
 
         public override async Task Execute(Update update)
@@ -68,7 +76,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
             _stateMachine.PassportPhotoPath = "";
             _stateMachine.DriverLicensePhotoPath = "";
 
-            _stateMachine.Passport = new PassportV1();
+            _stateMachine.Passport = new InternationalIdV2();
             _stateMachine.DriverLicense = new DriverLicenseV1();
         }
     }

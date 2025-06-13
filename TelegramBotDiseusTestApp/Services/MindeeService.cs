@@ -1,33 +1,40 @@
 ﻿using Mindee;
 using Mindee.Input;
 using Mindee.Product.DriverLicense;
+using Mindee.Product.InternationalId;
 using Mindee.Product.Passport;
 
 namespace TelegramBotDiseusTestApp.Services
 {
     internal class MindeeService
     {
-        private string _apiKey;
+        private MindeeClient _mindeeClient;
 
         public MindeeService(string apiKey)
         {
-            _apiKey = apiKey;
+            _mindeeClient = new MindeeClient(apiKey);
+        }
+
+        public async Task<InternationalIdV2> GetIdData(string filePath)
+        {
+            var inputSource = new LocalInputSource(filePath);
+            var response = await _mindeeClient.EnqueueAndParseAsync<InternationalIdV2>(inputSource);
+
+            return response.Document.Inference;
         }
 
         public async Task<PassportV1> GetPassportData(string filePath)
         {
-            MindeeClient mindeeClient = new MindeeClient(_apiKey);
             var inputSource = new LocalInputSource(filePath);
-            var response = await mindeeClient.ParseAsync<PassportV1>(inputSource);
+            var response = await _mindeeClient.ParseAsync<PassportV1>(inputSource);
 
             return response.Document.Inference;
         }
 
         public async Task<DriverLicenseV1> GetDriverLicenseData(string filePath)
         {
-            MindeeClient mindeeClient = new MindeeClient(_apiKey);
             var inputSource = new LocalInputSource(filePath);
-            var response = await mindeeClient.EnqueueAndParseAsync<DriverLicenseV1>(inputSource);
+            var response = await _mindeeClient.EnqueueAndParseAsync<DriverLicenseV1>(inputSource);
 
             return response.Document.Inference;
         }

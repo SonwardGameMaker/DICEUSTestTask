@@ -11,7 +11,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         private TelegramBotClient _bot;
         private TelegramDataTransferService _telegramService;
         private MindeeService _mindeeService;
-        private OpenAiService _openAiService;
+        private GroqService _groqService;
         private List<ChatStateMachine> _chats;
 
         private bool _inited;
@@ -23,14 +23,14 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             _maxNumberOfChats = maxNumberOfStateMachines;
         }
 
-        public void Init(TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, OpenAiService openAiService)
+        public void Init(TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
             if (_inited) return;
 
             _bot = bot;
             _telegramService = telegramService;
             _mindeeService = mindeeService;
-            _openAiService = openAiService;
+            _groqService = groqService;
 
             _inited = true;
         }
@@ -39,29 +39,48 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
 
         public async Task Execute(Message message, UpdateType updateType)
         {
-            if (_chats.Find(c => c.Chat == message.Chat) == null)
+            if (_chats.Find(c => c.Chat.Id == message.Chat.Id) == null)
             {
                 AddStateMachine(message.Chat);
+                Console.WriteLine($"State machine added via message. Chat: {message.Chat}");
+                Console.WriteLine($"Chats count: {_chats.Count}");
             }
-            await _chats.Find(c => c.Chat == message.Chat).Execute(message);
+            await _chats.Find(c => c.Chat.Id == message.Chat.Id).Execute(message);
         }
         public async Task Execute(Update update)
         {
-            if (_chats.Find(c => c.Chat == update.Message.Chat) == null)
+            if (update is { CallbackQuery: { } query } && query.Message != null)
             {
-                AddStateMachine(update.Message.Chat);
+                if (_chats.Find(c => c.Chat.Id == query.Message.Chat.Id) == null)
+                {
+                    AddStateMachine(update.Message.Chat);
+                    Console.WriteLine($"State machine added via update. Chat: {update.Message.Chat}");
+                }
+                await _chats.Find(c => c.Chat.Id == query.Message.Chat.Id).Execute(update);
             }
-            await _chats.Find(c => c.Chat == update.Message.Chat).Execute(update);
         }
 
         private bool AddStateMachine(Chat chat)
         {
             if (_chats.Count < _maxNumberOfChats)
             {
-                _chats.Add(new ChatStateMachine(chat, _bot, _telegramService, _mindeeService, _openAiService));
+                var newStateMachine = new ChatStateMachine(chat, _bot, _telegramService, _mindeeService, _groqService);
+                newStateMachine.JobDone += OnJobDone;
+                
+                _chats.Add(newStateMachine);
                 return true;
             }
             return false;
+        }
+
+        private void OnJobDone(long chatId)
+        {
+            var toDelete = _chats.Find(c => c.Chat.Id ==  chatId);
+
+            if (toDelete == null) return;
+            toDelete.JobDone -= OnJobDone;
+
+            _chats.Remove(toDelete);
         }
     }
 }
