@@ -25,6 +25,7 @@ builder.Services.AddSingleton<GroqService>(_ =>
 
 var app = builder.Build();
 
+app.MapGet("/", () => Results.Ok("Bot is alive"));
 app.MapPost("/webhook", async (HttpContext ctx,
                                TelegramBotClient bot,
                                StateMachineManager sm,
