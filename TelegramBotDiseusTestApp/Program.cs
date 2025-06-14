@@ -1,54 +1,43 @@
 ﻿using GroqNet.ChatCompletions;
+using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Text.Json.Serialization;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.FiniteStateMachine;
 using TelegramBotDiseusTestApp.Services;
 
-internal class Program
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(o =>
+    o.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
+
+builder.Services.AddSingleton<ITelegramBotClient>(_ =>
+    new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
+
+builder.Services.AddSingleton<StateMachineManager>(_ => new StateMachineManager(5));
+builder.Services.AddSingleton<TelegramDataTransferService>();
+builder.Services.AddSingleton<MindeeService>(_ =>
+    new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY")));
+builder.Services.AddSingleton<GroqService>(_ =>
+    new GroqService(Environment.GetEnvironmentVariable("GROQ_API_KEY"), GroqModel.LLaMA3_70b));
+
+var app = builder.Build();
+
+app.MapPost("/webhook", async (HttpContext ctx,
+                               TelegramBotClient bot,
+                               StateMachineManager sm,
+                               TelegramDataTransferService tg,
+                               MindeeService mindee,
+                               GroqService groq,
+                               CancellationToken ct) =>
 {
-    private static async Task Main(string[] args)
-    {
+    var update = await ctx.Request.ReadFromJsonAsync<Update>(cancellationToken: ct);
+    if (update is null) return Results.BadRequest();
+    sm.Init(bot, tg, mindee, groq);
+    await sm.Execute(update.Message, update.Type);
+    return Results.Ok();
+});
 
-        var listener = new HttpListener();
-        listener.Prefixes.Add($"http://*:{Environment.GetEnvironmentVariable("PORT") ?? "3000"}/");
-        listener.Start();
-
-        _ = Task.Run(() =>
-        {
-            while (true)
-            {
-                var ctx = listener.GetContext(); // ніколи не отримає, просто тримає порт відкритим
-                var res = ctx.Response;
-                res.StatusCode = 200;
-                res.Close();
-            }
-        });
-
-        TelegramBotClient bot;
-        CancellationTokenSource cts;
-        User me;
-
-        StateMachineManager stateMachineManager;
-        TelegramDataTransferService telegramService;
-        MindeeService mindeeService;
-        GroqService groqService;
-
-        cts = new CancellationTokenSource();
-        bot = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY"), cancellationToken: cts.Token);
-        me = await bot.GetMe();
-
-        stateMachineManager = new StateMachineManager(5);
-        telegramService = new TelegramDataTransferService(bot);
-        mindeeService = new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY"));
-        groqService = new GroqService(Environment.GetEnvironmentVariable("GROQ_API_KEY"), GroqModel.LLaMA3_70b);
-        stateMachineManager.Init(bot, telegramService, mindeeService, groqService);
-
-        bot.OnMessage += stateMachineManager.Execute;
-        bot.OnUpdate += stateMachineManager.Execute;
-
-        Console.WriteLine($"@{me.Username} is running... Press Enter to terminate");
-        Console.ReadLine();
-        cts.Cancel();
-    }
-}
+app.Run();
