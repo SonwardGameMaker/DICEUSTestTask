@@ -24,7 +24,7 @@ var app = builder.Build();
 app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
 
 app.MapPost("/webhook", async (Update update,
-                                TelegramBotClient bot,
+                                ITelegramBotClient bot,
                                 StateMachineManager sm,
                                 TelegramDataTransferService tg,
                                 MindeeService mindee,

@@ -12,14 +12,14 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
     internal class ChatStateMachine
     {
         private readonly Chat _chat;
-        private readonly TelegramBotClient _bot;
+        private readonly ITelegramBotClient _bot;
         private readonly TelegramDataTransferService _telegramService;
         private readonly List<ChatState> _states;
         private ChatState _currentState;
 
         public event Action<long>? JobDone;
 
-        public ChatStateMachine(Chat chat, TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
+        public ChatStateMachine(Chat chat, ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
             _chat = chat;
             _bot = bot;
@@ -38,7 +38,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         }
 
         public Chat Chat { get =>  _chat; }
-        public TelegramBotClient Bot { get => _bot; }
+        public ITelegramBotClient Bot { get => _bot; }
         public TelegramDataTransferService TelegramService { get => _telegramService; }
 
         public string PassportPhotoPath {  get; set; }

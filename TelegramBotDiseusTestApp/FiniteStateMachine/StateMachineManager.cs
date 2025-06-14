@@ -8,7 +8,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
     internal class StateMachineManager
     {
         private int _maxNumberOfChats;
-        private TelegramBotClient _bot;
+        private ITelegramBotClient _bot;
         private TelegramDataTransferService _telegramService;
         private MindeeService _mindeeService;
         private GroqService _groqService;
@@ -23,7 +23,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             _maxNumberOfChats = maxNumberOfStateMachines;
         }
 
-        public void Init(TelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
+        public void Init(ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
             if (_inited) return;
 
