@@ -49,15 +49,27 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         }
         public async Task Execute(Update update)
         {
-            Console.WriteLine("Execution AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!");
-            if (update is { CallbackQuery: { } query } && query.Message != null)
+            if (update.Message is { } message)
             {
-                if (_chats.Find(c => c.Chat.Id == query.Message.Chat.Id) == null)
+                if (_chats.Find(c => c.Chat.Id == message.Chat.Id) == null)
                 {
-                    AddStateMachine(update.Message.Chat);
-                    Console.WriteLine($"State machine added via update. Chat: {update.Message.Chat}");
+                    AddStateMachine(message.Chat);
+                    Console.WriteLine($"State machine added via message. Chat: {message.Chat}");
                 }
-                await _chats.Find(c => c.Chat.Id == query.Message.Chat.Id).Execute(update);
+
+                await _chats.Find(c => c.Chat.Id == message.Chat.Id).Execute(message);
+                return;
+            }
+
+            if (update.CallbackQuery is { } query && query.Message is { } callbackMessage)
+            {
+                if (_chats.Find(c => c.Chat.Id == callbackMessage.Chat.Id) == null)
+                {
+                    AddStateMachine(callbackMessage.Chat);
+                    Console.WriteLine($"State machine added via callback. Chat: {callbackMessage.Chat}");
+                }
+
+                await _chats.Find(c => c.Chat.Id == callbackMessage.Chat.Id).Execute(update);
             }
         }
 
