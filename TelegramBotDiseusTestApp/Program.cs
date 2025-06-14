@@ -1,22 +1,18 @@
 ﻿using GroqNet.ChatCompletions;
-using Microsoft.AspNetCore.Http;
-using System.Net;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.FiniteStateMachine;
 using TelegramBotDiseusTestApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureHttpJsonOptions(o =>
-    o.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
-
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
 
-builder.Services.AddSingleton<StateMachineManager>(_ => new StateMachineManager(5));
+builder.Services.AddSingleton<StateMachineManager>();
 builder.Services.AddSingleton<TelegramDataTransferService>();
 builder.Services.AddSingleton<MindeeService>(_ =>
     new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY")));
@@ -25,19 +21,17 @@ builder.Services.AddSingleton<GroqService>(_ =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Ok("Bot is alive"));
-app.MapPost("/webhook", async (HttpContext ctx,
-                               TelegramBotClient bot,
-                               StateMachineManager sm,
-                               TelegramDataTransferService tg,
-                               MindeeService mindee,
-                               GroqService groq,
-                               CancellationToken ct) =>
+app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
+
+app.MapPost("/webhook", async (Update update,
+                                TelegramBotClient bot,
+                                StateMachineManager sm,
+                                TelegramDataTransferService tg,
+                                MindeeService mindee,
+                                GroqService groq) =>
 {
-    var update = await ctx.Request.ReadFromJsonAsync<Update>(cancellationToken: ct);
-    if (update is null) return Results.BadRequest();
     sm.Init(bot, tg, mindee, groq);
-    await sm.Execute(update.Message, update.Type);
+    await sm.Execute(update);
     return Results.Ok();
 });
 
