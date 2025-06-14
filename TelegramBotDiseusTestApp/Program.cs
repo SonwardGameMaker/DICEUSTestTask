@@ -14,7 +14,7 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
 
-builder.Services.AddSingleton<StateMachineManager>();
+builder.Services.AddSingleton<StateMachineManager>(_ => new StateMachineManager(5));
 builder.Services.AddSingleton<TelegramDataTransferService>();
 builder.Services.AddSingleton<MindeeService>(_ =>
     new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY")));
