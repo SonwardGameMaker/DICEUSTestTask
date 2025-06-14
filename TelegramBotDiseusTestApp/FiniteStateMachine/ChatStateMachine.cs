@@ -59,7 +59,10 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         public async Task Execute(Message message)
             => await _currentState.Execute(message);
         public async Task Execute(Update update)
-            => await _currentState.Execute(update);
+        {
+            Console.WriteLine("Execution AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!");
+            await _currentState.Execute(update);
+        }
 
         private List<ChatState> InitStates(MindeeService mindeeService, GroqService groqService)
         {
