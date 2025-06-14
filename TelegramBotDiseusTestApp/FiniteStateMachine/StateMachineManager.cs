@@ -37,19 +37,8 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
 
         public int MaxNumberOfChats { get => _maxNumberOfChats; }
 
-        public async Task Execute(Message message, UpdateType updateType)
-        {
-            if (_chats.Find(c => c.Chat.Id == message.Chat.Id) == null)
-            {
-                AddStateMachine(message.Chat);
-                Console.WriteLine($"State machine added via message. Chat: {message.Chat}");
-                Console.WriteLine($"Chats count: {_chats.Count}");
-            }
-            await _chats.Find(c => c.Chat.Id == message.Chat.Id).Execute(message);
-        }
         public async Task Execute(Update update)
         {
-            Console.WriteLine("Execution started RUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUN!!!!");
             if (update.Message is { } message)
             {
                 if (_chats.Find(c => c.Chat.Id == message.Chat.Id) == null)
