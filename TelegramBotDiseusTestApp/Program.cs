@@ -8,6 +8,21 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
+        var listener = new HttpListener();
+        listener.Prefixes.Add($"http://*:{Environment.GetEnvironmentVariable("PORT") ?? "3000"}/");
+        listener.Start();
+
+        _ = Task.Run(() =>
+        {
+            while (true)
+            {
+                var ctx = listener.GetContext(); // ніколи не отримає, просто тримає порт відкритим
+                var res = ctx.Response;
+                res.StatusCode = 200;
+                res.Close();
+            }
+        });
+
         TelegramBotClient bot;
         CancellationTokenSource cts;
         User me;
@@ -15,7 +30,6 @@ internal class Program
         StateMachineManager stateMachineManager;
         TelegramDataTransferService telegramService;
         MindeeService mindeeService;
-        OpenAiService openAiService;
         GroqService groqService;
 
         cts = new CancellationTokenSource();
