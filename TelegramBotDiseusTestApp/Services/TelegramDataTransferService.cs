@@ -7,9 +7,9 @@ namespace TelegramBotDiseusTestApp.Services
     internal class TelegramDataTransferService
     {
         private string _downloadPath;
-        private TelegramBotClient _bot;
+        private ITelegramBotClient _bot;
 
-        public TelegramDataTransferService(TelegramBotClient bot)
+        public TelegramDataTransferService(ITelegramBotClient bot)
         {
             _bot = bot;
             _downloadPath = AppContext.BaseDirectory + "Download";
