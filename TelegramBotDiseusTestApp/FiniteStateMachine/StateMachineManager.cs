@@ -49,6 +49,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         }
         public async Task Execute(Update update)
         {
+            Console.WriteLine("Execution started RUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUN!!!!");
             if (update.Message is { } message)
             {
                 if (_chats.Find(c => c.Chat.Id == message.Chat.Id) == null)
