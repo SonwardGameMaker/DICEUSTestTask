@@ -6,11 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY TelegramBotDiseusTestApp/ TelegramBotDiseusTestApp/
 WORKDIR /src/TelegramBotDiseusTestApp
-RUN dotnet restore TelegramBotDiseusTestApp.csproj
-RUN dotnet publish TelegramBotDiseusTestApp.csproj -c Release -o /app/publish
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+ENV PORT=3000
 ENTRYPOINT ["dotnet", "TelegramBotDiseusTestApp.dll"]
