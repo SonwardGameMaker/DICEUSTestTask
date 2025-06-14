@@ -19,14 +19,13 @@ internal class Program
         GroqService groqService;
 
         cts = new CancellationTokenSource();
-        bot = new TelegramBotClient("7673635566:AAEBa1PwtHGKHFBFHHTyInMrVwThbj_UcL0", cancellationToken: cts.Token);
+        bot = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY"), cancellationToken: cts.Token);
         me = await bot.GetMe();
 
         stateMachineManager = new StateMachineManager(5);
         telegramService = new TelegramDataTransferService(bot);
-        mindeeService = new MindeeService("7d7e630731884ad4aab30abce5651b3a");
-        openAiService = new OpenAiService("gpt-3.5", "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");
-        groqService = new GroqService("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", GroqModel.LLaMA3_70b);
+        mindeeService = new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY"));
+        groqService = new GroqService(Environment.GetEnvironmentVariable("GROQ_API_KEY"), GroqModel.LLaMA3_70b);
         stateMachineManager.Init(bot, telegramService, mindeeService, groqService);
 
         bot.OnMessage += stateMachineManager.Execute;
