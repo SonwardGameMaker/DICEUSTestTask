@@ -8,6 +8,8 @@ using TelegramBotDiseusTestApp.FiniteStateMachine;
 using TelegramBotDiseusTestApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
@@ -35,4 +37,5 @@ app.MapPost("/webhook", async (Update update,
     return Results.Ok();
 });
 
+Console.WriteLine("App running");
 app.Run();
