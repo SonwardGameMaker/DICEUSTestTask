@@ -1,7 +1,4 @@
 ﻿using GroqNet.ChatCompletions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.FiniteStateMachine;

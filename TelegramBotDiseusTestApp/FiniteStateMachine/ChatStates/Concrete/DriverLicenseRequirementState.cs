@@ -1,6 +1,5 @@
 ﻿using Mindee.Product.DriverLicense;
 using Mindee.Product.InternationalId;
-using Mindee.Product.Passport;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
