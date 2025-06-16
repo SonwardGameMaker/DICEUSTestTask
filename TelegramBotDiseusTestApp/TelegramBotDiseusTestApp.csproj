@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="GroqNet" Version="1.0.1" />
     <PackageReference Include="Mindee" Version="3.28.0" />
-    <PackageReference Include="OpenAI" Version="2.1.0" />
     <PackageReference Include="Telegram.Bot" Version="22.5.1" />
   </ItemGroup>
 
