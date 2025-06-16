@@ -16,7 +16,6 @@ builder.Services.AddSingleton<ITelegramBotClient>(_ =>
 
 builder.Services.AddSingleton<StateMachineManager>(_ => new StateMachineManager(5));
 
-// ✅ тут тепер використовуємо ITelegramBotClient — без прямої залежності
 builder.Services.AddSingleton<TelegramDataTransferService>();
 
 builder.Services.AddSingleton<MindeeService>(_ =>
@@ -42,5 +41,5 @@ app.MapPost("/webhook", async (
     return Results.Ok();
 });
 
-Console.WriteLine("✅ Bot is running");
+Console.WriteLine("Bot is running");
 app.Run();
