@@ -14,8 +14,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
         {
             string chatGptResponce = await _stateMachine.GroqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
                 $"{_stateMachine.Passport.Prediction.ToString()}\n" +
-                $"{_stateMachine.DriverLicense.Prediction.ToString()}",
-                _stateMachine.UserCurrentData);
+                $"{_stateMachine.DriverLicense.Prediction.ToString()}");
             await _stateMachine.Bot.SendMessage(_stateMachine.Chat, chatGptResponce);
 
             JobDone?.Invoke();

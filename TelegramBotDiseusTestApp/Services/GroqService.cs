@@ -22,16 +22,30 @@ namespace TelegramBotDiseusTestApp.Services
 
         public BotInstructions Instructions { get => _instructions; }
 
-        public async Task<string> AskAsync(string prompt, UserCurrentData userData, GroqChatHistory? chatHistory = null)
+        public async Task<string> AskAsync(string prompt)
         {
             try
             {
-                chatHistory?.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                var history = chatHistory ?? new GroqChatHistory();
-                history.AddUserMessage(prompt);
+                var history = new GroqChatHistory { new(prompt) };
                 var rsp = await _ai.GetChatCompletionsAsync(history);
+                return rsp.Choices.First().Message.Content;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return "ERROR: " + ex.Message;
+            }
+        }
+
+        public async Task<string> AskAsync(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
+        {
+            try
+            {
+                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+                chatHistory.AddUserMessage(prompt);
+                var rsp = await _ai.GetChatCompletionsAsync(chatHistory);
                 var result = rsp.Choices.First().Message.Content;
-                history.AddAssistantMessage(result);
+                chatHistory.AddAssistantMessage(result);
                 return result;
             }
             catch (Exception ex)
