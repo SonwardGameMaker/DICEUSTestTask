@@ -1,7 +1,9 @@
-﻿using Mindee.Product.DriverLicense;
+﻿using GroqNet.ChatCompletions;
+using Mindee.Product.DriverLicense;
 using Mindee.Product.InternationalId;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBotDiseusTestApp.DTOs;
 using TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates;
 using TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete;
 using TelegramBotDiseusTestApp.Services;
@@ -10,11 +12,14 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
 {
     internal class ChatStateMachine
     {
-        private readonly Chat _chat;
         private readonly ITelegramBotClient _bot;
         private readonly TelegramDataTransferService _telegramService;
+        private readonly GroqService _groqService;
+
+        private readonly Chat _chat;
         private readonly List<ChatState> _states;
         private ChatState _currentState;
+        private GroqChatHistory _groqChatHistory;
 
         public event Action<long>? JobDone;
 
@@ -23,13 +28,17 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             _chat = chat;
             _bot = bot;
             _telegramService = telegramService;
+            _groqService = groqService;
+
+            UserCurrentData = new UserCurrentData(chat.FirstName);
+            _groqChatHistory = _groqService.CreateChatHistory();
 
             PassportPhotoPath = "";
             DriverLicensePhotoPath = "";
             Passport = new InternationalIdV2();
             DriverLicense = new DriverLicenseV1();
 
-            _states = InitStates(mindeeService, groqService);
+            _states = InitStates(mindeeService);
             GetState<InsurancePolicyIssuanceState>().JobDone += ClearPhotoData;
 
             _currentState = _states[0];
@@ -39,7 +48,10 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         public Chat Chat { get =>  _chat; }
         public ITelegramBotClient Bot { get => _bot; }
         public TelegramDataTransferService TelegramService { get => _telegramService; }
+        public GroqService GroqService { get => _groqService; }
 
+        public UserCurrentData UserCurrentData;
+        public GroqChatHistory ChatHistory { get => _groqChatHistory; }
         public string PassportPhotoPath {  get; set; }
         public string DriverLicensePhotoPath { get; set; }
         public  InternationalIdV2 Passport { get; set; }
@@ -60,7 +72,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
         public async Task Execute(Update update)
             => await _currentState.Execute(update);
 
-        private List<ChatState> InitStates(MindeeService mindeeService, GroqService groqService)
+        private List<ChatState> InitStates(MindeeService mindeeService)
         {
             List<ChatState> chatStates = new List<ChatState>();
 
@@ -68,7 +80,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             chatStates.Add(new PassportRequirementState(this));
             chatStates.Add(new DriverLicenseRequirementState(this, mindeeService));
             chatStates.Add(new PriceQuotationState(this));
-            chatStates.Add(new InsurancePolicyIssuanceState(this, groqService));
+            chatStates.Add(new InsurancePolicyIssuanceState(this));
 
             return chatStates;
         }

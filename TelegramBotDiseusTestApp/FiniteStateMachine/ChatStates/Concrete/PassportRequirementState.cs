@@ -22,7 +22,13 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                 _stateMachine.ChangeSate<DriverLicenseRequirementState>();
             }
             else
-                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendPassportResponse);
+            {
+                if (message.Text != null)
+                    await AskGroq(message.Text);
+                else
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendPassportResponse);
+            }
+                
         }
 
         public override async Task Execute(Update update)

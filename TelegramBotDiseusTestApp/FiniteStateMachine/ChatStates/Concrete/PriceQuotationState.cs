@@ -14,7 +14,12 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                 replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Ok });
 
         public override async Task Execute(Message message)
-            => await _stateMachine.Bot.SendMessage(_stateMachine.Chat, "Please read the price quotation");
+        {
+            if (message.Text != null)
+                await AskGroq(message.Text);
+            else
+                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, "Please read the price quotation");
+        }
 
         public override async Task Execute(Update update)
         {

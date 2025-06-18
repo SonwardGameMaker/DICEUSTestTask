@@ -39,10 +39,21 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                     await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DataConfirmation, replyMarkup: new InlineKeyboardButton[] { _response.Cancel, _response.Confirm });
                 }
                 else
-                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
+                {
+                    if (message.Text != null)
+                        await AskGroq(message.Text);
+                    else
+                        await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
+                }
             }
             else
-                await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
+            {
+                if (message.Text != null)
+                    await AskGroq(message.Text);
+                else
+                    await _stateMachine.Bot.SendMessage(_stateMachine.Chat, _response.DidntSendDriverLicenseResponse);
+            }
+                
         }
 
         public override async Task Execute(Update update)

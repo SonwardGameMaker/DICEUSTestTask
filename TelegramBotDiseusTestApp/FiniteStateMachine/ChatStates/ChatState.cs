@@ -19,5 +19,8 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
 
         public abstract Task Execute(Message message);
         public abstract Task Execute(Update update);
+
+        protected async Task AskGroq(string message)
+            => await _stateMachine.GroqService.AskAsync(message, _stateMachine.UserCurrentData, _stateMachine.ChatHistory);
     }
 }
