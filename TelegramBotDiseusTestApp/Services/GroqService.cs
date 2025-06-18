@@ -12,7 +12,12 @@ namespace TelegramBotDiseusTestApp.Services
         public GroqService(string apiKey, GroqModel model, BotInstructions? botInstructions = null)
         {
             _ai = new GroqClient(apiKey, model);
-            _instructions = botInstructions ?? BotInstructions.DefaultInstructions;
+            if (botInstructions == null)
+            {
+                _instructions = BotInstructions.DefaultInstructions;
+            }
+            else
+                _instructions = botInstructions;
         }
 
         public BotInstructions Instructions { get => _instructions; }
