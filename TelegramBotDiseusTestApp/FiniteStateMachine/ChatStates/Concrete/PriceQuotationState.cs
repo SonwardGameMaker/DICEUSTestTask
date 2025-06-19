@@ -33,6 +33,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                 else if (query.Data == _response.Ok)
                 {
                     await _stateMachine.Bot.AnswerCallbackQuery(query.Id, "You agreed with payment");
+                    _stateMachine.UserCurrentData.PriceConfirmed = true;
                     _stateMachine.ChangeSate<InsurancePolicyIssuanceState>();
                 }
             }

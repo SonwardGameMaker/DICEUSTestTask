@@ -19,6 +19,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
             if (message.Photo != null)
             {
                 _stateMachine.PassportPhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.Passport);
+                _stateMachine.UserCurrentData.PassportPhotoUploaded = true;
                 _stateMachine.ChangeSate<DriverLicenseRequirementState>();
             }
             else

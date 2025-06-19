@@ -10,7 +10,6 @@
             DriverLicensePhotoUploaded = false;
             PhotosConfirmed = false;
             PriceConfirmed = false;
-            UserName = userName;
         }
 
         public string UserName { get; private set; }

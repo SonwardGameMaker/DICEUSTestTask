@@ -90,6 +90,9 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             GetState<DriverLicenseRequirementState>().ClearData();
             GetState<InsurancePolicyIssuanceState>().JobDone -= ClearPhotoData;
 
+            UserCurrentData.PhotosConfirmed = false;
+            UserCurrentData.PriceConfirmed = true;
+
             JobDone?.Invoke(_chat.Id);
         }
     }

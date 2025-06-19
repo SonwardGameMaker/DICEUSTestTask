@@ -28,6 +28,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                 if (!_photoWasScaned)
                 {
                     _stateMachine.DriverLicensePhotoPath = await _stateMachine.TelegramService.GetPhoto(message, DocumentType.DriverLicense);
+                    _stateMachine.UserCurrentData.DriverLicensePhotoUploaded = true;
 
                     _stateMachine.Passport = await _mindeeService.GetIdData(_stateMachine.PassportPhotoPath);
                     _stateMachine.DriverLicense = await _mindeeService.GetDriverLicenseData(_stateMachine.DriverLicensePhotoPath);
@@ -69,6 +70,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
                 else if (query.Data == _response.Confirm)
                 {
                     await _stateMachine.Bot.AnswerCallbackQuery(query.Id, $"You confirmed file data");
+                    _stateMachine.UserCurrentData.PhotosConfirmed = true;
                     _stateMachine.ChangeSate<PriceQuotationState>();
                 }
             }
@@ -82,6 +84,9 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates.Concrete
 
             _stateMachine.TelegramService.DeletePhoto(_stateMachine.PassportPhotoPath);
             _stateMachine.TelegramService.DeletePhoto(_stateMachine.DriverLicensePhotoPath);
+
+            _stateMachine.UserCurrentData.PassportPhotoUploaded = false;
+            _stateMachine.UserCurrentData.DriverLicensePhotoUploaded = false;
 
             _stateMachine.PassportPhotoPath = "";
             _stateMachine.DriverLicensePhotoPath = "";
