@@ -72,7 +72,7 @@ namespace TelegramBotDiseusTestApp.Services
 
         private void ValidateTokenNumber(GroqChatHistory chatHistory)
         {
-            if (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model)) return;
+            if (AppoximateTokenNumber(chatHistory) <= GroqModel.MaxTokens(_model)) return;
 
             ToMuchTokenUse?.Invoke(BotResponseData.DefaultResponceData.ToMuchTokenUseWarning);
             while (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model))
