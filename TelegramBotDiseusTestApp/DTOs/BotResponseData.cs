@@ -12,12 +12,14 @@
         public string DidntSendPassportResponse { get; set; }
         public string DidntSendDriverLicenseResponse { get; set; }
 
+        public string ToMuchTokenUseWarning { get; set; }
+
         public string StartCommand { get; set; }
         public string Cancel { get; set; }
         public string Confirm { get; set; }
         public string Ok { get; set; }
 
-        public static readonly BotResponseData TempResponceData = new BotResponseData 
+        public static readonly BotResponseData DefaultResponceData = new BotResponseData 
         { 
             GreetingsResponse = "I'm your Car Insurance Assistant Bot. I'm here to help you purchase car insurance quickly and easily.\r\nLet's get started with the process!",
             PassportRequest = "To proceed, please send a clear photo of your passport",
@@ -28,6 +30,8 @@
 
             DidntSendPassportResponse = "Please send a clear photo of your passport",
             DidntSendDriverLicenseResponse = "Please send a clear photo of your vehicle identification document",
+
+            ToMuchTokenUseWarning = "Warning: Too many tokens used. Earlier messages will be forgotten.",
 
             StartCommand = "/start",
             Cancel = "Cancel",

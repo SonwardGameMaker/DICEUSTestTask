@@ -6,12 +6,16 @@ namespace TelegramBotDiseusTestApp.Services
 {
     internal class GroqService
     {
-        private readonly GroqClient _ai;
+        private readonly GroqModel _model;
+        private readonly GroqClient _groqCient;
         private BotInstructions _instructions;
+
+        public Action<string> ToMuchTokenUse;
 
         public GroqService(string apiKey, GroqModel model, BotInstructions? botInstructions = null)
         {
-            _ai = new GroqClient(apiKey, model);
+            _model = model;
+            _groqCient = new GroqClient(apiKey, model);
             if (botInstructions == null)
             {
                 _instructions = BotInstructions.DefaultInstructions;
@@ -27,7 +31,7 @@ namespace TelegramBotDiseusTestApp.Services
             try
             {
                 var history = new GroqChatHistory { new(prompt) };
-                var rsp = await _ai.GetChatCompletionsAsync(history);
+                var rsp = await _groqCient.GetChatCompletionsAsync(history);
                 return rsp.Choices.First().Message.Content;
             }
             catch (Exception ex)
@@ -43,7 +47,8 @@ namespace TelegramBotDiseusTestApp.Services
             {
                 chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
                 chatHistory.AddUserMessage(prompt);
-                var rsp = await _ai.GetChatCompletionsAsync(chatHistory);
+                ValidateTokenNumber(chatHistory);
+                var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
                 var result = rsp.Choices.First().Message.Content;
                 chatHistory.AddAssistantMessage(result);
                 return result;
@@ -64,5 +69,28 @@ namespace TelegramBotDiseusTestApp.Services
             $"\nDriver license photo uploaded: {userData.DriverLicensePhotoUploaded}" +
             $"\nPhotos confirmed: {userData.PhotosConfirmed}" +
             $"\nPrice confirmed: {userData.PriceConfirmed}";
+
+        private void ValidateTokenNumber(GroqChatHistory chatHistory)
+        {
+            if (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model)) return;
+
+            ToMuchTokenUse?.Invoke(BotResponseData.DefaultResponceData.ToMuchTokenUseWarning);
+            while (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model))
+            {
+                chatHistory.Remove(chatHistory.ElementAt(1));
+            }
+        }
+
+        private int AppoximateTokenNumber(GroqChatHistory chatHistory)
+        {
+            int result = 0;
+
+            foreach(GroqMessage message in chatHistory)
+            {
+                result += (int)Math.Ceiling(message.Content.Split(' ').Length * 3.0 / 4.0);
+            }
+
+            return result;
+        }
     }
 }

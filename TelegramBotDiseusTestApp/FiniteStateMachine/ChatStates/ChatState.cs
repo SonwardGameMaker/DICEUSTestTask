@@ -12,7 +12,7 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
         public ChatState(ChatStateMachine chatStateMachine)
         {
             _stateMachine = chatStateMachine;
-            _response = BotResponseData.TempResponceData;
+            _response = BotResponseData.DefaultResponceData;
         }
 
         public abstract void ExitState();
