@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.DTOs;
 
 namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
@@ -21,6 +22,9 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
         public abstract Task Execute(Update update);
 
         protected async Task AskGroq(string message)
-            => await _stateMachine.GroqService.AskAsync(message, _stateMachine.UserCurrentData, _stateMachine.ChatHistory);
+        {
+            string groqRespond = await _stateMachine.GroqService.AskAsync(message, _stateMachine.UserCurrentData, _stateMachine.ChatHistory);
+            await _stateMachine.Bot.SendMessage(_stateMachine.Chat, groqRespond);
+        }
     }
 }
