@@ -44,6 +44,10 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             _currentState = _states[0];
             _currentState.EnterState();
         }
+        ~ChatStateMachine()
+        {
+            GetState<InsurancePolicyIssuanceState>().JobDone -= ClearPhotoData;
+        }
 
         public Chat Chat { get =>  _chat; }
         public ITelegramBotClient Bot { get => _bot; }

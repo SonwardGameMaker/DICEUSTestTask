@@ -13,6 +13,12 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
         {
             _stateMachine = chatStateMachine;
             _response = BotResponseData.DefaultResponceData;
+
+            _stateMachine.GroqService.ToMuchTokenUse += ToMuchTokensInform;
+        }
+        ~ChatState()
+        {
+            _stateMachine.GroqService.ToMuchTokenUse -= ToMuchTokensInform;
         }
 
         public abstract void ExitState();
@@ -26,5 +32,8 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine.ChatStates
             string groqRespond = await _stateMachine.GroqService.AskAsync(message, _stateMachine.UserCurrentData, _stateMachine.ChatHistory);
             await _stateMachine.Bot.SendMessage(_stateMachine.Chat, groqRespond);
         }
+
+        private async void ToMuchTokensInform(string message)
+            => await _stateMachine.Bot.SendMessage(_stateMachine.Chat, message);
     }
 }

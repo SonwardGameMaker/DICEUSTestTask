@@ -21,6 +21,11 @@ namespace TelegramBotDiseusTestApp.FiniteStateMachine
             _chats = new List<ChatStateMachine>();
             _maxNumberOfChats = maxNumberOfStateMachines;
         }
+        ~StateMachineManager()
+        {
+            foreach (ChatStateMachine chatStateMachine in _chats)
+                chatStateMachine.JobDone -= OnJobDone;
+        }
 
         public void Init(ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
