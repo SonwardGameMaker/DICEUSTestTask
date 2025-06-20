@@ -1,6 +1,5 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBotDiseusTestApp.FiniteStateMachine;
 using TelegramBotDiseusTestApp.Services;
 
 namespace TelegramBotDiseusTestApp.AiChat

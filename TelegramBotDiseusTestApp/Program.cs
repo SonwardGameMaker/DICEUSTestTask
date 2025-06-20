@@ -2,7 +2,6 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.AiChat;
-using TelegramBotDiseusTestApp.FiniteStateMachine;
 using TelegramBotDiseusTestApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
