@@ -4,5 +4,6 @@
     ShowDocumentsToUser,
     ConfirmDocumentPhotos,
     ConfirmPrice,
+    CreateInsuranse,
     ClearData
 }

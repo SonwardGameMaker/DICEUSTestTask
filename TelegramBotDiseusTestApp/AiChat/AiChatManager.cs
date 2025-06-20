@@ -53,9 +53,14 @@ namespace TelegramBotDiseusTestApp.AiChat
             return null;
         }
 
-        private void OnJobDone()
+        private void OnJobDone(long id)
         {
-            // TODO
+            var toDelete = _chats.Find(c => c.Chat.Id == id);
+
+            if (toDelete == null) return;
+            toDelete.JobDone -= OnJobDone;
+
+            _chats.Remove(toDelete);
         }
     }
 }

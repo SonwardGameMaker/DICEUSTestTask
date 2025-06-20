@@ -28,10 +28,13 @@ namespace TelegramBotDiseusTestApp.AiChat
                         await UserAgreedToPay();
                         break;
 
+                    case AiCommand.CreateInsuranse:
+                        await CreateInsurance();
+                        break;
+
                     case AiCommand.ClearData:
                         await ClearData();
                         break;
-
                 }
             }
             else
@@ -65,6 +68,15 @@ namespace TelegramBotDiseusTestApp.AiChat
         {
             _userCurrentData.PriceConfirmed = true;
             await HandleGroqRespond(_groqService.AskAsync("[UserAgreedToPay]", _userCurrentData, _chatHistory));
+        }
+
+        private async Task CreateInsurance()
+        {
+            await HandleGroqRespond(_groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
+                $"{_passport.Prediction.ToString()}\n" +
+                $"{_driverLicense.Prediction.ToString()}"));
+
+            JobDone?.Invoke(_chat.Id);
         }
 
         private async Task ClearData()

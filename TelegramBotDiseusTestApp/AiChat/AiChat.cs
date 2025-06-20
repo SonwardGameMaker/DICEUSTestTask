@@ -24,7 +24,7 @@ namespace TelegramBotDiseusTestApp.AiChat
         private InternationalIdV2 _passport;
         private DriverLicenseV1 _driverLicense;
 
-        public event Action? JobDone;
+        public event Action<long>? JobDone;
 
         public AiChat(Chat chat, ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
         {
