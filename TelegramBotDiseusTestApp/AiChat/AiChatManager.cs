@@ -14,9 +14,13 @@ namespace TelegramBotDiseusTestApp.AiChat
         private GroqService _groqService;
         private List<AiChat> _chats;
 
-        public AiChatManager(int maxNumberOfChats, ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
+        public AiChatManager(int maxNumberOfChats)
         {
             _maxNumberOfChats = maxNumberOfChats;
+        }
+
+        public void Init(ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
+        {
             _bot = bot;
             _telegramService = telegramService;
             _mindeeService = mindeeService;
