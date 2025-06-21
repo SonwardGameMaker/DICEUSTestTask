@@ -29,7 +29,6 @@ namespace TelegramBotDiseusTestApp.AiChat
 
         public async Task TalkToChat(Update update)
         {
-            Console.WriteLine("Webhook getted");
             var message = update.Message;
             if (message == null)
                 return;
