@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.AiChat;
+using TelegramBotDiseusTestApp.DTOs.Options;
 using TelegramBotDiseusTestApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,12 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
 
-builder.Services.AddSingleton(_ => new AiChatManager(5));
+builder.Services.Configure<AiChatManagerOptions>(options =>
+{
+    options.MaxNumberOfChats = 5;
+});
+
+builder.Services.AddSingleton<AiChatManager>();
 
 builder.Services.AddSingleton<TelegramDataTransferService>();
 
@@ -33,7 +39,6 @@ app.MapPost("/webhook", async (
     MindeeService mindeeService,
     GroqService groqService) =>
 {
-    aiChatManager.Init(bot, telegramService, mindeeService, groqService);
     await aiChatManager.TalkToChat(update);
     return Results.Ok();
 });

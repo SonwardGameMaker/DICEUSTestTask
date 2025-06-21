@@ -1,5 +1,7 @@
-﻿using Telegram.Bot;
+﻿using Microsoft.Extensions.Options;
+using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBotDiseusTestApp.DTOs.Options;
 using TelegramBotDiseusTestApp.Services;
 
 namespace TelegramBotDiseusTestApp.AiChat
@@ -13,13 +15,9 @@ namespace TelegramBotDiseusTestApp.AiChat
         private GroqService _groqService;
         private List<AiChat> _chats;
 
-        public AiChatManager(int maxNumberOfChats)
+        public AiChatManager(ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService, IOptions<AiChatManagerOptions> options)
         {
-            _maxNumberOfChats = maxNumberOfChats;
-        }
-
-        public void Init(ITelegramBotClient bot, TelegramDataTransferService telegramService, MindeeService mindeeService, GroqService groqService)
-        {
+            _maxNumberOfChats = options.Value.MaxNumberOfChats;
             _bot = bot;
             _telegramService = telegramService;
             _mindeeService = mindeeService;
