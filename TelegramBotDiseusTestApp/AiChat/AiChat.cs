@@ -37,6 +37,8 @@ namespace TelegramBotDiseusTestApp.AiChat
             ResetChat();
 
             _groqService.ToMuchTokenUse += ToMuchTokensInform;
+
+            
         }
         ~AiChat()
         {
@@ -47,6 +49,12 @@ namespace TelegramBotDiseusTestApp.AiChat
 
         public async Task TalkToChat(Message message)
         {
+            if (message.Text == BotResponseData.DefaultResponceData.StartCommand)
+            {
+                await HandleGroqRespond(_groqService.AskAsync("[Bot started]", _userCurrentData, _chatHistory));
+                return;
+            }
+
             string promt = $"{(await GetDocumentPhoto(message)? "[User added photo]; " : "")} + {(message.Text != null ? message.Text : "")}";
 
             if (promt.Length > 0)
@@ -55,7 +63,7 @@ namespace TelegramBotDiseusTestApp.AiChat
                 await _bot.SendMessage(_chat.Id, "Please write some text or send photo");
         }
 
-        public void ResetChat()
+        public async void ResetChat()
         {
             _chatHistory = _groqService.CreateChatHistory();
             _userCurrentData = new UserCurrentData(_chat.FirstName);
@@ -64,6 +72,9 @@ namespace TelegramBotDiseusTestApp.AiChat
             _driverLicensePhotoPath = "";
             _passport = new InternationalIdV2();
             _driverLicense = new DriverLicenseV1();
+
+
+            await _bot.SendMessage(_chat, "Started");
         }
 
         private async Task HandleGroqRespond(Task<string> respond)
