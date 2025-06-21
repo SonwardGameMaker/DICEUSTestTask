@@ -1,7 +1,7 @@
 ﻿using GroqNet.ChatCompletions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBotDiseusTestApp.FiniteStateMachine;
+using TelegramBotDiseusTestApp.AiChat;
 using TelegramBotDiseusTestApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,14 +11,14 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 builder.Services.AddSingleton<ITelegramBotClient>(_ =>
     new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_BOT_API_KEY")));
 
-builder.Services.AddSingleton<StateMachineManager>(_ => new StateMachineManager(5));
+builder.Services.AddSingleton(_ => new AiChatManager(5));
 
 builder.Services.AddSingleton<TelegramDataTransferService>();
 
-builder.Services.AddSingleton<MindeeService>(_ =>
+builder.Services.AddSingleton(_ =>
     new MindeeService(Environment.GetEnvironmentVariable("MINDEE_API_KEY")));
 
-builder.Services.AddSingleton<GroqService>(_ =>
+builder.Services.AddSingleton(_ =>
     new GroqService(Environment.GetEnvironmentVariable("GROQ_API_KEY"), GroqModel.LLaMA3_70b));
 
 var app = builder.Build();
@@ -28,13 +28,13 @@ app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
 app.MapPost("/webhook", async (
     Update update,
     ITelegramBotClient bot,
-    StateMachineManager sm,
-    TelegramDataTransferService tg,
-    MindeeService mindee,
-    GroqService groq) =>
+    AiChatManager aiChatManager,
+    TelegramDataTransferService telegramService,
+    MindeeService mindeeService,
+    GroqService groqService) =>
 {
-    sm.Init(bot, tg, mindee, groq);
-    await sm.Execute(update);
+    aiChatManager.Init(bot, telegramService, mindeeService, groqService);
+    await aiChatManager.TalkToChat(update);
     return Results.Ok();
 });
 
