@@ -78,7 +78,7 @@ namespace TelegramBotDiseusTestApp.AiChat
 
         private async Task HandleGroqRespond(Task<string> respond)
         {
-            string input = await respondTask;
+            string input = await respond;
 
             int start = input.LastIndexOf('[');
             int end = input.LastIndexOf(']');
@@ -116,7 +116,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             return false;
         }
 
-        private async Task ToMuchTokensInform(string message)
+        private async void ToMuchTokensInform(string message)
             => await _bot.SendMessage(_chat, message);
     }
 }
