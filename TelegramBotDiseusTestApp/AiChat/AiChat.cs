@@ -78,6 +78,25 @@ namespace TelegramBotDiseusTestApp.AiChat
         }
 
         private async Task HandleGroqRespond(Task<string> respond)
+<<<<<<< Updated upstream
+=======
+        {
+            string input = await respond;
+
+            int commandStart = input.LastIndexOf('[');
+            int commandEnd = input.LastIndexOf(']');
+
+            string text = input.Substring(0, commandStart).Trim();
+            string command = input.Substring(commandStart + 1, commandEnd - commandStart - 1).Trim();
+
+            await _bot.SendMessage(_chat.Id, text);
+
+            if (command != null && command.Length > 0)
+                await ExecuteAiCommand(command);
+        }
+
+        private async Task HandleGroqRespond2(Task<string> respondTask)
+>>>>>>> Stashed changes
         {
             string input = await respond;
             string text;
