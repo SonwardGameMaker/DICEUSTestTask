@@ -63,55 +63,38 @@ namespace TelegramBotDiseusTestApp.AiChat
                 await _bot.SendMessage(_chat.Id, "Please write some text or send photo");
         }
 
-        public async void ResetChat()
+        public async Task ResetChat()
         {
             _chatHistory = _groqService.CreateChatHistory();
             _userCurrentData = new UserCurrentData(_chat.FirstName);
 
-            _passportPhotoPath = "";
-            _driverLicensePhotoPath = "";
+            _passportPhotoPath = string.Empty;
+            _driverLicensePhotoPath = string.Empty;
             _passport = new InternationalIdV2();
             _driverLicense = new DriverLicenseV1();
 
-
-            await _bot.SendMessage(_chat, "Started");
+            await _bot.SendMessage(_chat.Id, "Started");
         }
 
         private async Task HandleGroqRespond(Task<string> respond)
-<<<<<<< Updated upstream
-=======
         {
-            string input = await respond;
+            string input = await respondTask;
 
-            int commandStart = input.LastIndexOf('[');
-            int commandEnd = input.LastIndexOf(']');
+            int start = input.LastIndexOf('[');
+            int end = input.LastIndexOf(']');
 
-            string text = input.Substring(0, commandStart).Trim();
-            string command = input.Substring(commandStart + 1, commandEnd - commandStart - 1).Trim();
+            string text = (start >= 0 && end > start)
+                ? input[..start].Trim()
+                : input.Trim();
 
             await _bot.SendMessage(_chat.Id, text);
 
-            if (command != null && command.Length > 0)
-                await ExecuteAiCommand(command);
-        }
-
-        private async Task HandleGroqRespond2(Task<string> respondTask)
->>>>>>> Stashed changes
-        {
-            string input = await respond;
-            string text;
-            string command;
-
-            int commandStart = input.LastIndexOf('[');
-            int commandEnd = input.LastIndexOf(']');
-
-            text = input.Substring(0, commandStart).Trim();
-            command = input.Substring(commandStart + 1, commandEnd - commandStart - 1).Trim();
-
-            await _bot.SendMessage(_chat.Id, text);
-
-            if (command != null && command.Length > 0)
-                await ExecuteAiCommand(command);
+            if (start >= 0 && end > start)
+            {
+                string command = input.Substring(start + 1, end - start - 1).Trim();
+                if (command.Length > 0)
+                    await ExecuteAiCommand(command);
+            }
         }
 
         private async Task<bool> GetDocumentPhoto(Message message)
@@ -133,7 +116,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             return false;
         }
 
-        private async void ToMuchTokensInform(string message)
+        private async Task ToMuchTokensInform(string message)
             => await _bot.SendMessage(_chat, message);
     }
 }
