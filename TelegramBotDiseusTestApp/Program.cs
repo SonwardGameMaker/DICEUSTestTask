@@ -26,7 +26,7 @@ var app = builder.Build();
 app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
 
 app.MapPost("/webhook", async (
-    Message message,
+    Update update,
     ITelegramBotClient bot,
     AiChatManager aiChatManager,
     TelegramDataTransferService telegramService,
@@ -34,7 +34,7 @@ app.MapPost("/webhook", async (
     GroqService groqService) =>
 {
     aiChatManager.Init(bot, telegramService, mindeeService, groqService);
-    await aiChatManager.TalkToChat(message);
+    await aiChatManager.TalkToChat(update);
     return Results.Ok();
 });
 

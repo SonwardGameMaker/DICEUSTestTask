@@ -27,8 +27,12 @@ namespace TelegramBotDiseusTestApp.AiChat
             _chats = new List<AiChat>();
         }
 
-        public async Task TalkToChat(Message message)
+        public async Task TalkToChat(Update update)
         {
+            var message = update.Message;
+            if (message == null)
+                return;
+
             var chat = _chats.Find(c => c.Chat.Id == message.Chat.Id);
             if (chat == null)
                 chat = CreateChat(message.Chat);
@@ -39,6 +43,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             else
                 await chat.TalkToChat(message);
         }
+
 
         private AiChat? CreateChat(Chat chat)
         {
