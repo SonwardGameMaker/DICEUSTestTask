@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBotDiseusTestApp.DTOs;
 using TelegramBotDiseusTestApp.DTOs.Options;
 using TelegramBotDiseusTestApp.Services;
 
@@ -33,7 +35,7 @@ namespace TelegramBotDiseusTestApp.AiChat
 
             var chat = _chats.Find(c => c.Chat.Id == message.Chat.Id);
             if (chat == null)
-                chat = CreateChat(message.Chat);
+                chat = await CreateChat(message.Chat);
             if (chat == null) return;
 
             if (message.Text == "/resetchat")
@@ -43,7 +45,7 @@ namespace TelegramBotDiseusTestApp.AiChat
         }
 
 
-        private AiChat? CreateChat(Chat chat)
+        private async Task<AiChat?> CreateChat(Chat chat)
         {
             if (_chats.Count < _maxNumberOfChats)
             {
@@ -53,7 +55,11 @@ namespace TelegramBotDiseusTestApp.AiChat
                 _chats.Add(newChat);
                 return newChat;
             }
-            return null;
+            else
+            {
+                await _bot.SendMessage(chat, BotResponseData.DefaultResponceData.NoAwaliableServices);
+                return null;
+            }
         }
 
         private void OnJobDone(long id)

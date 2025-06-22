@@ -13,6 +13,7 @@
         public string DidntSendDriverLicenseResponse { get; set; }
 
         public string ToMuchTokenUseWarning { get; set; }
+        public string NoAwaliableServices {  get; set; }
 
         public string StartCommand { get; set; }
         public string Cancel { get; set; }
@@ -32,6 +33,7 @@
             DidntSendDriverLicenseResponse = "Please send a clear photo of your vehicle identification document",
 
             ToMuchTokenUseWarning = "Warning: Too many tokens used. Earlier messages will be forgotten.",
+            NoAwaliableServices = "No awaliable services rigght now. Please, try to use our bot later",
 
             StartCommand = "/start",
             Cancel = "Cancel",
