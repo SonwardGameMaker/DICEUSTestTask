@@ -61,7 +61,7 @@ namespace TelegramBotDiseusTestApp.Services
         }
 
         public GroqChatHistory CreateChatHistory()
-            => new GroqChatHistory { _instructions.BaseInstructions };
+            => new GroqChatHistory { _instructions.BaseInstructions, _instructions.CommandList, _instructions.Rules };
 
         private string UserDataToPromt(UserCurrentData userData)
             => $"User name: {userData.UserName}" +
@@ -77,7 +77,7 @@ namespace TelegramBotDiseusTestApp.Services
             ToMuchTokenUse?.Invoke(BotResponseData.DefaultResponceData.ToMuchTokenUseWarning);
             while (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model))
             {
-                chatHistory.Remove(chatHistory.ElementAt(1));
+                chatHistory.Remove(chatHistory.First(c => c.Role != GroqChatRole.System));
             }
         }
 
