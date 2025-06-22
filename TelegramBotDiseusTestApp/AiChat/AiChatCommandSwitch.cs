@@ -78,12 +78,9 @@ namespace TelegramBotDiseusTestApp.AiChat
 
         private async Task CreateInsurance()
         {
-            Console.WriteLine("Creating Insurance...");
-            var respond = _groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
+            await HandleGroqRespond(_groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
                 $"{_passport.Prediction.ToString()}\n" +
-                $"{_driverLicense.Prediction.ToString()}");
-            await HandleGroqRespond(respond);
-            Console.WriteLine($"Groq respond: {respond}");
+                $"{_driverLicense.Prediction.ToString()}"));
 
             JobDone?.Invoke(_chat.Id);
         }
