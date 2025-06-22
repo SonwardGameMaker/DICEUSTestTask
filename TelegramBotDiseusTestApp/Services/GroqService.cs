@@ -60,6 +60,25 @@ namespace TelegramBotDiseusTestApp.Services
             }
         }
 
+        public async Task<string> AskAsSystenAsync(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
+        {
+            try
+            {
+                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+                chatHistory.AddUserMessage(prompt);
+                ValidateTokenNumber(chatHistory);
+                var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
+                var result = rsp.Choices.First().Message.Content;
+                chatHistory.AddAssistantMessage(result);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                return "ERROR: " + ex.Message;
+            }
+        }
+
         public GroqChatHistory CreateChatHistory()
             => new GroqChatHistory { _instructions.BaseInstructions, _instructions.CommandList, _instructions.Rules };
 
