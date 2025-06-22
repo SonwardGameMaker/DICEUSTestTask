@@ -79,7 +79,7 @@ namespace TelegramBotDiseusTestApp.AiChat
         private async Task HandleGroqRespond(Task<string> respond)
         {
             string input = await respond;
-            await _bot.SendMessage(_chat, $"Debug message: {input}");
+            //await _bot.SendMessage(_chat, $"Debug message: {input}");
 
             int start = input.LastIndexOf('[');
             int end = input.LastIndexOf(']');

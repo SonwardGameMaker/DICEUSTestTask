@@ -65,7 +65,7 @@ namespace TelegramBotDiseusTestApp.Services
             try
             {
                 chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.AddUserMessage(prompt);
+                chatHistory.Add(new GroqMessage(GroqChatRole.System, prompt));
                 ValidateTokenNumber(chatHistory);
                 var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
                 var result = rsp.Choices.First().Message.Content;
