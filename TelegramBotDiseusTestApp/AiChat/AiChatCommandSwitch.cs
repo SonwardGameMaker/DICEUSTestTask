@@ -50,6 +50,9 @@ namespace TelegramBotDiseusTestApp.AiChat
             _passport = await _mindeeService.GetIdDataMock(_passportPhotoPath);
             _driverLicense = await _mindeeService.GetDriverLicenseDataMock(_driverLicensePhotoPath);
 
+            Console.WriteLine($"passport: {_passport}");
+            Console.WriteLine($"driverLicense: {_driverLicense}");
+
             await HandleGroqRespond(_groqService.AskAsync("[Documents was scanned]", _userCurrentData, _chatHistory));
         }
 
@@ -73,9 +76,12 @@ namespace TelegramBotDiseusTestApp.AiChat
 
         private async Task CreateInsurance()
         {
-            await HandleGroqRespond(_groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
+            Console.WriteLine("Creating Insurance...");
+            var respond = _groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
                 $"{_passport.Prediction.ToString()}\n" +
-                $"{_driverLicense.Prediction.ToString()}"));
+                $"{_driverLicense.Prediction.ToString()}");
+            await HandleGroqRespond(respond);
+            Console.WriteLine($"Groq respond: {respond}");
 
             JobDone?.Invoke(_chat.Id);
         }
