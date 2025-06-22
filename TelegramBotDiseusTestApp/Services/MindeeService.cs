@@ -22,6 +22,12 @@ namespace TelegramBotDiseusTestApp.Services
 
             return response.Document.Inference;
         }
+        public async Task<InternationalIdV2> GetIdDataMock(string filePath)
+        {
+            var response = new InternationalIdV2();
+
+            return response;
+        }
 
         public async Task<PassportV1> GetPassportData(string filePath)
         {
@@ -37,6 +43,12 @@ namespace TelegramBotDiseusTestApp.Services
             var response = await _mindeeClient.EnqueueAndParseAsync<DriverLicenseV1>(inputSource);
 
             return response.Document.Inference;
+        }
+        public async Task<DriverLicenseV1> GetDriverLicenseDataMock(string filePath)
+        {
+            var response = new DriverLicenseV1();
+
+            return response;
         }
     }
 }

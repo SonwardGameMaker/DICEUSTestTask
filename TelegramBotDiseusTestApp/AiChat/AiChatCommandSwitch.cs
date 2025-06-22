@@ -46,8 +46,9 @@ namespace TelegramBotDiseusTestApp.AiChat
         #region commands
         private async Task ScanDocuments()
         {
-            _passport = await _mindeeService.GetIdData(_passportPhotoPath);
-            _driverLicense = await _mindeeService.GetDriverLicenseData(_driverLicensePhotoPath);
+            // TODO CHANGE TO REALL MINDEE SERVICES WHEN DONE TESTING
+            _passport = await _mindeeService.GetIdDataMock(_passportPhotoPath);
+            _driverLicense = await _mindeeService.GetDriverLicenseDataMock(_driverLicensePhotoPath);
 
             await HandleGroqRespond(_groqService.AskAsync("[Documents was scanned]", _userCurrentData, _chatHistory));
         }
