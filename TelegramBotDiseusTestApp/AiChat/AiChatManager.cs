@@ -37,7 +37,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             if (chat == null) return;
 
             if (message.Text == "/resetchat")
-                chat.ResetChat();
+                await chat.ResetChat();
             else
                 await chat.TalkToChat(message);
         }
