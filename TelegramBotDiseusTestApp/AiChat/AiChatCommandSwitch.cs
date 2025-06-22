@@ -47,8 +47,8 @@ namespace TelegramBotDiseusTestApp.AiChat
         private async Task ScanDocuments()
         {
             // TODO CHANGE TO REALL MINDEE SERVICES WHEN DONE TESTING
-            _passport = await _mindeeService.GetIdDataMock(_passportPhotoPath);
-            _driverLicense = await _mindeeService.GetDriverLicenseDataMock(_driverLicensePhotoPath);
+            _passport = await _mindeeService.GetIdData(_passportPhotoPath);
+            _driverLicense = await _mindeeService.GetDriverLicenseData(_driverLicensePhotoPath);
 
             Console.WriteLine($"passport: {_passport}");
             Console.WriteLine($"driverLicense: {_driverLicense}");
