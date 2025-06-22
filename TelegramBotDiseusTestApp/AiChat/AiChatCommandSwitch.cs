@@ -47,8 +47,8 @@ namespace TelegramBotDiseusTestApp.AiChat
         private async Task ScanDocuments()
         {
             // TODO CHANGE TO REALL MINDEE SERVICES WHEN DONE TESTING
-            _passport = await _mindeeService.GetIdData(_passportPhotoPath);
-            _driverLicense = await _mindeeService.GetDriverLicenseData(_driverLicensePhotoPath);
+            _passport = await _mindeeService.GetIdDataMock(_passportPhotoPath);
+            _driverLicense = await _mindeeService.GetDriverLicenseDataMock(_driverLicensePhotoPath);
 
             Console.WriteLine($"passport: {_passport}");
             Console.WriteLine($"driverLicense: {_driverLicense}");
@@ -60,6 +60,8 @@ namespace TelegramBotDiseusTestApp.AiChat
         {
             await _bot.SendMessage(_chat.Id, _passport.Prediction.ToString());
             await _bot.SendMessage(_chat.Id, _driverLicense.Prediction.ToString());
+
+            await HandleGroqRespond(_groqService.AskAsync("[Documents shoved to user]", _userCurrentData, _chatHistory));
         }
 
         private async Task UserConfirmedDocuments()
