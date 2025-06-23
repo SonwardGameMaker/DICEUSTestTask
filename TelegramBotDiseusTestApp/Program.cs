@@ -15,8 +15,7 @@ var groqApiKey = Environment.GetEnvironmentVariable("GROQ_API_KEY");
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
     
-builder.Services.AddSingleton<ITelegramBotClient>(_ =>
-    new TelegramBotClient(telegramApiKey));
+builder.Services.AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(telegramApiKey));
 
 builder.Services.Configure<AiChatManagerOptions>(options =>
 {
