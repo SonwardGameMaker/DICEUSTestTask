@@ -32,8 +32,8 @@ namespace TelegramBotDiseusTestApp.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
+                Console.WriteLine(ex.Message);
+                return ex.Message;
             }
         }
 
@@ -51,8 +51,8 @@ namespace TelegramBotDiseusTestApp.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
+                Console.WriteLine(ex.Message);
+                return ex.Message;
             }
         }
 
