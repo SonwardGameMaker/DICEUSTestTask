@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.DTOs;
