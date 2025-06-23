@@ -22,7 +22,7 @@ namespace TelegramBotDiseusTestApp.Services
             var tgFile = await _bot.GetFile(fileId);
 
             CreateDownloadDirectory();
-            string filePath = _downloadPath + "\\User" + message.Chat.Id + documentType.ToString() + ".jpg";
+            var filePath = _downloadPath + "\\User" + message.Chat.Id + documentType.ToString() + ".jpg";
             await using var stream = File.Create(filePath);
             await _bot.DownloadFile(tgFile, stream);
             return filePath;
