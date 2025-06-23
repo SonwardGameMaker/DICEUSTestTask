@@ -7,7 +7,6 @@ namespace TelegramBotDiseusTestApp.DTOs
         public GroqMessage BaseInstructions {  get; set; }
         public GroqMessage CommandList { get; set; }
         public GroqMessage Rules { get; set; }
-        
 
         public static readonly BotInstructions DefaultInstructions = new BotInstructions()
         {

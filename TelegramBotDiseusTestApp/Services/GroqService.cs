@@ -45,31 +45,23 @@ namespace TelegramBotDiseusTestApp.Services
         {
             try
             {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.AddUserMessage(prompt);
-                ValidateTokenNumber(chatHistory);
-                var respond = await _groqCient.GetChatCompletionsAsync(chatHistory);
-                var result = respond.Choices.First().Message.Content;
-                chatHistory.AddAssistantMessage(result);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
-            }
-        }
+                var tempChatHistory = new GroqChatHistory();
+                foreach (var message in chatHistory)
+                {
+                    tempChatHistory.Add(message);
+                }
 
-        public async Task<string> AskAsSystenAsync(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
-        {
-            try
-            {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, prompt));
-                ValidateTokenNumber(chatHistory);
-                var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
-                var result = rsp.Choices.First().Message.Content;
+                tempChatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+                tempChatHistory.AddUserMessage(prompt);
+
+                ValidateTokenNumber(tempChatHistory);
+
+                var respond = await _groqCient.GetChatCompletionsAsync(tempChatHistory);
+                var result = respond.Choices.First().Message.Content;
+
+                chatHistory.AddUserMessage(prompt);
                 chatHistory.AddAssistantMessage(result);
+
                 return result;
             }
             catch (Exception ex)
