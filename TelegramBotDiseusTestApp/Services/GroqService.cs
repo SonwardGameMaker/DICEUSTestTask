@@ -17,9 +17,7 @@ namespace TelegramBotDiseusTestApp.Services
             _model = model;
             _groqCient = new GroqClient(apiKey, model);
             if (botInstructions == null)
-            {
                 _instructions = BotInstructions.DefaultInstructions;
-            }
             else
                 _instructions = botInstructions;
         }
@@ -74,9 +72,7 @@ namespace TelegramBotDiseusTestApp.Services
 
             ToMuchTokenUse?.Invoke(BotResponseData.DefaultResponceData.ToMuchTokenUseWarning);
             while (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model))
-            {
                 chatHistory.Remove(chatHistory.First(c => c.Role != GroqChatRole.System));
-            }
         }
 
         private int AppoximateTokenNumber(GroqChatHistory chatHistory)
@@ -84,9 +80,7 @@ namespace TelegramBotDiseusTestApp.Services
             int result = 0;
 
             foreach(GroqMessage message in chatHistory)
-            {
                 result += (int)Math.Ceiling(message.Content.Split(' ').Length * 3.0 / 4.0);
-            }
 
             return result;
         }

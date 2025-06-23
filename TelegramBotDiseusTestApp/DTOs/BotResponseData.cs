@@ -2,23 +2,23 @@
 {
     internal class BotResponseData
     {
-        public string GreetingsResponse { get; set; }
-        public string PassportRequest { get; set; }
-        public string DriverLicenceRequest { get; set; }
-        public string DataConfirmation { get; set; }
-        public string PriceQuotaionRequest { get; set; }
-        public string StrongPriceQuotaionRequest { get; set; }
+        public string GreetingsResponse { get; private set; }
+        public string PassportRequest { get; private set; }
+        public string DriverLicenceRequest { get; private set; }
+        public string DataConfirmation { get; private set; }
+        public string PriceQuotaionRequest { get; private set; }
+        public string StrongPriceQuotaionRequest { get; private set; }
 
-        public string DidntSendPassportResponse { get; set; }
-        public string DidntSendDriverLicenseResponse { get; set; }
+        public string DidntSendPassportResponse { get; private set; }
+        public string DidntSendDriverLicenseResponse { get; private set; }
 
-        public string ToMuchTokenUseWarning { get; set; }
-        public string NoAwaliableServices {  get; set; }
+        public string ToMuchTokenUseWarning { get; private set; }
+        public string NoAwaliableServices {  get; private set; }
 
-        public string StartCommand { get; set; }
-        public string Cancel { get; set; }
-        public string Confirm { get; set; }
-        public string Ok { get; set; }
+        public string StartCommand { get; private set; }
+        public string Cancel { get; private set; }
+        public string Confirm { get; private set; }
+        public string Ok { get; private set; }
 
         public static readonly BotResponseData DefaultResponceData = new BotResponseData 
         { 

@@ -36,8 +36,6 @@ namespace TelegramBotDiseusTestApp.AiChat
             ResetChat();
 
             _groqService.ToMuchTokenUse += ToMuchTokensInform;
-
-            
         }
         ~AiChat()
         {
@@ -78,7 +76,6 @@ namespace TelegramBotDiseusTestApp.AiChat
         private async Task HandleGroqRespond(Task<string> respond)
         {
             string input = await respond;
-            //await _bot.SendMessage(_chat, $"Debug message: {input}");
 
             int start = input.LastIndexOf('[');
             int end = input.LastIndexOf(']');
