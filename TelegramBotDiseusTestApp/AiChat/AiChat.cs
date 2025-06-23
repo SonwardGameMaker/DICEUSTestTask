@@ -1,7 +1,6 @@
 ﻿using GroqNet.ChatCompletions;
 using Mindee.Product.DriverLicense;
 using Mindee.Product.InternationalId;
-using System;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.DTOs;

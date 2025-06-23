@@ -24,8 +24,6 @@ namespace TelegramBotDiseusTestApp.Services
                 _instructions = botInstructions;
         }
 
-        public BotInstructions Instructions { get => _instructions; }
-
         public async Task<string> AskAsync(string prompt)
         {
             try
@@ -50,25 +48,6 @@ namespace TelegramBotDiseusTestApp.Services
                 ValidateTokenNumber(chatHistory);
                 var respond = await _groqCient.GetChatCompletionsAsync(chatHistory);
                 var result = respond.Choices.First().Message.Content;
-                chatHistory.AddAssistantMessage(result);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
-            }
-        }
-
-        public async Task<string> AskAsSystenAsync(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
-        {
-            try
-            {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, prompt));
-                ValidateTokenNumber(chatHistory);
-                var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
-                var result = rsp.Choices.First().Message.Content;
                 chatHistory.AddAssistantMessage(result);
                 return result;
             }
