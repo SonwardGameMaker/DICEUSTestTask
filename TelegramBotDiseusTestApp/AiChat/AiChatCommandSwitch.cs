@@ -46,14 +46,14 @@ namespace TelegramBotDiseusTestApp.AiChat
         #region commands
         private async Task ScanDocuments()
         {
-            // TODO CHANGE TO REALL MINDEE SERVICES WHEN DONE TESTING
             _passport = await _mindeeService.GetIdData(_passportPhotoPath);
             _driverLicense = await _mindeeService.GetDriverLicenseData(_driverLicensePhotoPath);
 
             Console.WriteLine($"passport: {_passport}");
             Console.WriteLine($"driverLicense: {_driverLicense}");
 
-            await HandleGroqRespond(_groqService.AskAsSystenAsync("[DocumentsWasScanned]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.AskAsync("[DocumentsWasScanned]", _userCurrentData, _chatHistory));
+            //await HandleGroqRespond(_groqService.AskAsSystenAsync("[DocumentsWasScanned]", _userCurrentData, _chatHistory));
         }
 
         private async Task ShowDocumentsToUser()
@@ -61,19 +61,22 @@ namespace TelegramBotDiseusTestApp.AiChat
             await _bot.SendMessage(_chat.Id, _passport.Prediction.ToString());
             await _bot.SendMessage(_chat.Id, _driverLicense.Prediction.ToString());
 
-            await HandleGroqRespond(_groqService.AskAsSystenAsync("[DocumentsShovedToUser]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.AskAsync("[Documents shoved to user]", _userCurrentData, _chatHistory));
+            //await HandleGroqRespond(_groqService.AskAsSystenAsync("[DocumentsShovedToUser]", _userCurrentData, _chatHistory));
         }
 
         private async Task UserConfirmedDocuments()
         {
             _userCurrentData.PhotosConfirmed = true;
-            await HandleGroqRespond(_groqService.AskAsSystenAsync("[UserConfirmedDocuments]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.AskAsync("[UserConfirmedDocuments]", _userCurrentData, _chatHistory));
+            //await HandleGroqRespond(_groqService.AskAsSystenAsync("[UserConfirmedDocuments]", _userCurrentData, _chatHistory));
         }
 
         private async Task UserAgreedToPay()
         {
             _userCurrentData.PriceConfirmed = true;
-            await HandleGroqRespond(_groqService.AskAsSystenAsync("[UserAgreedToPay]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.AskAsync("[UserAgreedToPay]", _userCurrentData, _chatHistory));
+            //await HandleGroqRespond(_groqService.AskAsSystenAsync("[UserAgreedToPay]", _userCurrentData, _chatHistory));
         }
 
         private async Task CreateInsurance()
