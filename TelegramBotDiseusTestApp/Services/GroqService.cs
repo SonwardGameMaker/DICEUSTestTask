@@ -45,12 +45,16 @@ namespace TelegramBotDiseusTestApp.Services
         {
             try
             {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.AddUserMessage(prompt);
-                ValidateTokenNumber(chatHistory);
-                var rsp = await _groqCient.GetChatCompletionsAsync(chatHistory);
+                GroqChatHistory tempChatHistory = new GroqChatHistory();
+                chatHistory.CopyTo(tempChatHistory.ToArray(), 0);
+
+                tempChatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+                tempChatHistory.AddUserMessage(prompt);
+                var rsp = await _groqCient.GetChatCompletionsAsync(tempChatHistory);
                 var result = rsp.Choices.First().Message.Content;
+                chatHistory.AddUserMessage(prompt);
                 chatHistory.AddAssistantMessage(result);
+                ValidateTokenNumber(chatHistory);
                 return result;
             }
             catch (Exception ex)
