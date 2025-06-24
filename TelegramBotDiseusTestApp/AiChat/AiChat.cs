@@ -48,14 +48,14 @@ namespace TelegramBotDiseusTestApp.AiChat
         {
             if (message.Text == BotResponseData.DefaultResponceData.StartCommand)
             {
-                await HandleGroqRespond(_groqService.AskAsync("[Bot started]", _userCurrentData, _chatHistory));
+                await HandleGroqRespond(_groqService.TalkToChat("[Bot started]", _userCurrentData, _chatHistory));
                 return;
             }
 
             string promt = $"{(await GetDocumentPhoto(message)? "[User added photo]; " : "")} + {(message.Text != null ? message.Text : "")}";
 
             if (promt.Length > 0)
-                await HandleGroqRespond(_groqService.AskAsync(promt, _userCurrentData, _chatHistory));
+                await HandleGroqRespond(_groqService.TalkToChat(promt, _userCurrentData, _chatHistory));
             else
                 await _bot.SendMessage(_chat.Id, "Please write some text or send photo");
         }

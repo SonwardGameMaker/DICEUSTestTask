@@ -22,7 +22,7 @@ namespace TelegramBotDiseusTestApp.Services
                 _instructions = botInstructions;
         }
 
-        public async Task<string> AskAsync(string prompt)
+        public async Task<string> TalkToChat(string prompt)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace TelegramBotDiseusTestApp.Services
             }
         }
 
-        public async Task<string> AskAsync(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
+        public async Task<string> TalkToChat(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
         {
             try
             {

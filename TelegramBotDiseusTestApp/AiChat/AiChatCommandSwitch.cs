@@ -52,7 +52,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             Console.WriteLine($"passport: {_passport}");
             Console.WriteLine($"driverLicense: {_driverLicense}");
 
-            await HandleGroqRespond(_groqService.AskAsync("[DocumentsWasScanned]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.TalkToChat("[DocumentsWasScanned]", _userCurrentData, _chatHistory));
         }
 
         private async Task ShowDocumentsToUser()
@@ -60,24 +60,24 @@ namespace TelegramBotDiseusTestApp.AiChat
             await _bot.SendMessage(_chat.Id, _passport.Prediction.ToString());
             await _bot.SendMessage(_chat.Id, _driverLicense.Prediction.ToString());
 
-            await HandleGroqRespond(_groqService.AskAsync("[Documents shoved to user]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.TalkToChat("[Documents shoved to user]", _userCurrentData, _chatHistory));
         }
 
         private async Task UserConfirmedDocuments()
         {
             _userCurrentData.PhotosConfirmed = true;
-            await HandleGroqRespond(_groqService.AskAsync("[UserConfirmedDocuments]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.TalkToChat("[UserConfirmedDocuments]", _userCurrentData, _chatHistory));
         }
 
         private async Task UserAgreedToPay()
         {
             _userCurrentData.PriceConfirmed = true;
-            await HandleGroqRespond(_groqService.AskAsync("[UserAgreedToPay]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.TalkToChat("[UserAgreedToPay]", _userCurrentData, _chatHistory));
         }
 
         private async Task CreateInsurance()
         {
-            await HandleGroqRespond(_groqService.AskAsync($"Generate a dummy insurance policy based on data:\n" +
+            await HandleGroqRespond(_groqService.TalkToChat($"Generate a dummy insurance policy based on data:\n" +
                 $"{_passport.Prediction.ToString()}\n" +
                 $"{_driverLicense.Prediction.ToString()}"));
 
@@ -100,7 +100,7 @@ namespace TelegramBotDiseusTestApp.AiChat
             _passport = new InternationalIdV2();
             _driverLicense = new DriverLicenseV1();
 
-            await HandleGroqRespond(_groqService.AskAsync("[Data cleared]", _userCurrentData, _chatHistory));
+            await HandleGroqRespond(_groqService.TalkToChat("[Data cleared]", _userCurrentData, _chatHistory));
         }
         #endregion
     }
