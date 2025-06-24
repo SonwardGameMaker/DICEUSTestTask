@@ -24,26 +24,27 @@ namespace TelegramBotDiseusTestApp.Services
 
         public async Task<string> TalkToChat(string prompt)
         {
-            try
-            {
-                var history = new GroqChatHistory { new(prompt) };
-                var rsp = await _groqCient.GetChatCompletionsAsync(history);
-                return rsp.Choices.First().Message.Content;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return ex.Message;
-            }
+            var history = new GroqChatHistory { new(prompt) };
+            return await ExecuteChatCompletionAsync(history);
         }
 
         public async Task<string> TalkToChat(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
         {
+            chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+            chatHistory.AddUserMessage(prompt);
+            ValidateTokenNumber(chatHistory);
+            return await ExecuteChatCompletionAsync(chatHistory);
+        }
+
+        public GroqChatHistory CreateChatHistory()
+            => new GroqChatHistory { _instructions.BaseInstructions, _instructions.CommandList, _instructions.Rules };
+
+
+
+        private async Task<string> ExecuteChatCompletionAsync(GroqChatHistory chatHistory)
+        {
             try
             {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.AddUserMessage(prompt);
-                ValidateTokenNumber(chatHistory);
                 var respond = await _groqCient.GetChatCompletionsAsync(chatHistory);
                 var result = respond.Choices.First().Message.Content;
                 chatHistory.AddAssistantMessage(result);
@@ -55,9 +56,6 @@ namespace TelegramBotDiseusTestApp.Services
                 return ex.Message;
             }
         }
-
-        public GroqChatHistory CreateChatHistory()
-            => new GroqChatHistory { _instructions.BaseInstructions, _instructions.CommandList, _instructions.Rules };
 
         private string UserDataToPromt(UserCurrentData userData)
             => $"User name: {userData.UserName}" +
