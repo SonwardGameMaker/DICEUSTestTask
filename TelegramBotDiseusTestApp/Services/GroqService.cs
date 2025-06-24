@@ -1,5 +1,6 @@
 ﻿using GroqNet;
 using GroqNet.ChatCompletions;
+using TelegramBotDiseusTestApp.AiChat;
 using TelegramBotDiseusTestApp.DTOs;
 
 namespace TelegramBotDiseusTestApp.Services
@@ -24,8 +25,6 @@ namespace TelegramBotDiseusTestApp.Services
                 _instructions = botInstructions;
         }
 
-        public BotInstructions Instructions { get => _instructions; }
-
         public async Task<string> AskAsync(string prompt)
         {
             try
@@ -36,8 +35,8 @@ namespace TelegramBotDiseusTestApp.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
+                Console.WriteLine(ex.Message);
+                return ex.Message;
             }
         }
 
@@ -47,9 +46,7 @@ namespace TelegramBotDiseusTestApp.Services
             {
                 var tempChatHistory = new GroqChatHistory();
                 foreach (var message in chatHistory)
-                {
                     tempChatHistory.Add(message);
-                }
 
                 tempChatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
                 tempChatHistory.AddUserMessage(prompt);
@@ -66,8 +63,8 @@ namespace TelegramBotDiseusTestApp.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                return "ERROR: " + ex.Message;
+                Console.WriteLine(ex.Message);
+                return ex.Message;
             }
         }
 
@@ -87,9 +84,7 @@ namespace TelegramBotDiseusTestApp.Services
 
             ToMuchTokenUse?.Invoke(BotResponseData.DefaultResponceData.ToMuchTokenUseWarning);
             while (AppoximateTokenNumber(chatHistory) > GroqModel.MaxTokens(_model))
-            {
                 chatHistory.Remove(chatHistory.First(c => c.Role != GroqChatRole.System));
-            }
         }
 
         private int AppoximateTokenNumber(GroqChatHistory chatHistory)
@@ -97,9 +92,7 @@ namespace TelegramBotDiseusTestApp.Services
             int result = 0;
 
             foreach(GroqMessage message in chatHistory)
-            {
                 result += (int)Math.Ceiling(message.Content.Split(' ').Length * 3.0 / 4.0);
-            }
 
             return result;
         }
