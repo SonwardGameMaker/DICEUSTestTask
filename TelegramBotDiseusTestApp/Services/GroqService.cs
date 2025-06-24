@@ -1,5 +1,6 @@
 ﻿using GroqNet;
 using GroqNet.ChatCompletions;
+using Telegram.Bot.Types;
 using TelegramBotDiseusTestApp.DTOs;
 
 namespace TelegramBotDiseusTestApp.Services
@@ -23,41 +24,44 @@ namespace TelegramBotDiseusTestApp.Services
         }
 
         public async Task<string> TalkToChat(string prompt)
-        {
-            try
-            {
-                var history = new GroqChatHistory { new(prompt) };
-                var rsp = await _groqCient.GetChatCompletionsAsync(history);
-                return rsp.Choices.First().Message.Content;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return ex.Message;
-            }
-        }
+            => await ExecuteChatCompletion(prompt);
 
         public async Task<string> TalkToChat(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
         {
-            try
-            {
-                chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
-                chatHistory.AddUserMessage(prompt);
-                ValidateTokenNumber(chatHistory);
-                var respond = await _groqCient.GetChatCompletionsAsync(chatHistory);
-                var result = respond.Choices.First().Message.Content;
-                chatHistory.AddAssistantMessage(result);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return ex.Message;
-            }
+            var tempHistory = new GroqChatHistory();
+            foreach (var message in chatHistory)
+                tempHistory.Add(message);
+
+            tempHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+
+            var result = await ExecuteChatCompletion(prompt, tempHistory);
+
+            chatHistory.AddUserMessage(prompt);
+            chatHistory.AddAssistantMessage(result);
+
+            return result;
         }
 
         public GroqChatHistory CreateChatHistory()
             => new GroqChatHistory { _instructions.BaseInstructions, _instructions.CommandList, _instructions.Rules };
+
+        private async Task<string> ExecuteChatCompletion(string prompt, GroqChatHistory? chatHistory = null)
+        {
+            try
+            {
+                var tempHistory = chatHistory == null ? new GroqChatHistory() : chatHistory;
+                tempHistory.AddUserMessage(prompt);
+                ValidateTokenNumber(tempHistory);
+
+                var response = await _groqCient.GetChatCompletionsAsync(tempHistory);
+                return response.Choices.First().Message.Content;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return ex.Message;
+            }
+        }
 
         private string UserDataToPromt(UserCurrentData userData)
             => $"User name: {userData.UserName}" +
