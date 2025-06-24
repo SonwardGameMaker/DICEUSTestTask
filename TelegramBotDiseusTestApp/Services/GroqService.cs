@@ -23,17 +23,24 @@ namespace TelegramBotDiseusTestApp.Services
         }
 
         public async Task<string> TalkToChat(string prompt)
-        {
-            var history = new GroqChatHistory { new(prompt) };
-            return await ExecuteChatCompletionAsync(history);
-        }
+            => await ExecuteChatCompletionAsync(prompt);
 
-        public async Task<string> TalkToChat(string prompt, UserCurrentData userData, GroqChatHistory chatHistory)
+        public async Task<string> TalkToChat(string prompt, UserCurrentData userData, GroqChatHistory chatHistory, List<GroqMessage>? additionalInstructions = null)
         {
-            chatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+            var tempChatHistory = new GroqChatHistory();
+            foreach (var message in chatHistory)
+                tempChatHistory.Add(message);
+
+            tempChatHistory.Add(new GroqMessage(GroqChatRole.System, UserDataToPromt(userData)));
+
+            if (additionalInstructions != null) tempChatHistory.AddRange(additionalInstructions);
+
+            var result = await ExecuteChatCompletionAsync(prompt, tempChatHistory);
+
             chatHistory.AddUserMessage(prompt);
-            ValidateTokenNumber(chatHistory);
-            return await ExecuteChatCompletionAsync(chatHistory);
+            chatHistory.AddAssistantMessage(result);
+
+            return result;
         }
 
         public GroqChatHistory CreateChatHistory()
@@ -41,14 +48,15 @@ namespace TelegramBotDiseusTestApp.Services
 
 
 
-        private async Task<string> ExecuteChatCompletionAsync(GroqChatHistory chatHistory)
+        private async Task<string> ExecuteChatCompletionAsync(string prompt, GroqChatHistory? chatHistory = null)
         {
             try
             {
-                var respond = await _groqCient.GetChatCompletionsAsync(chatHistory);
-                var result = respond.Choices.First().Message.Content;
-                chatHistory.AddAssistantMessage(result);
-                return result;
+                var history = chatHistory ?? new GroqChatHistory();
+                ValidateTokenNumber(history);
+
+                var response = await _groqCient.GetChatCompletionsAsync(history);
+                return response.Choices.First().Message.Content;
             }
             catch (Exception ex)
             {
